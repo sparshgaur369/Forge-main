@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Forge - 3D Experience</title>
+        <meta name="description" content="Interactive 3D website about AIR Disasters" />
+        <link
+            rel="shortcut icon"
+            href="./assets/logo/logo2.png"
+            type="image/x-icon"
+        />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="Forge - 3D Experience" />
+        <meta property="og:description" content="Interactive 3D website about AIR Disasters" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://github.com/sparshgaur369" />
+        <meta property="og:image" content="" />
+
+        <link rel="stylesheet" href="./css/tailwind-build.css">
+        <link rel="stylesheet" href="css/index.css" />
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+            integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+        
+        <style>
+            #canvas-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+            }
+            
+            .content {
+                position: relative;
+                z-index: 10;
+            }
+            
+            .section-divider {
+                position: relative;
+                height: 150px;
+                margin-top: 50px;
+                margin-bottom: 50px;
+            }
+            
+            .gradient-text {
+                background: linear-gradient(to right, #ff8a00, #da1b60);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            
+            .floating {
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+                100% { transform: translateY(0px); }
+            }
+            
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.8);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .modal-content {
+                background-color: #1a1a1a;
+                padding: 30px;
+                border-radius: 10px;
+                max-width: 800px;
+                width: 80%;
+                color: white;
+                position: relative;
+            }
+            
+            .close-modal {
+                position: absolute;
+                right: 15px;
+                top: 15px;
+                font-size: 24px;
+                cursor: pointer;
+            }
+            
+            .interactive-element {
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+            
+            .interactive-element:hover {
+                transform: scale(1.05);
+            }
+        </style>
+    </head>
+    <body class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-black tw-text-white">
+        <!-- Three.js Canvas Container -->
+        <div id="canvas-container"></div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <header
+                class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around"
+            >
+                <a class="tw-h-[10px] tw-w-[50px] tw-p-[4px]" href="./index.html">
+                    <img
+                        src="./assets/logo/logo2.png"
+                        alt="logo"
+                        class="tw-object tw-mt-3 floating"
+                    />
+                </a>
+                <div
+                    class="collapsible-header animated-collapse max-lg:tw-shadow-md"
+                    id="collapsed-header-items"
+                >
+                    <div
+                        class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center"
+                    >
+                        <a class="header-links" href="./aboutus.html"> About us </a>
+                        <a class="header-links" href="#problem" onclick="scrollToSection('problem')"> Problem </a>
+                        <a class="header-links" href="#trynow" onclick="scrollToSection('trynow')"> Solution </a>
+                        <a class="header-links" href="#features" onclick="scrollToSection('features')"> Features </a>
+                        <a class="header-links" href="#impact" onclick="scrollToSection('impact')"> Impact </a>
+                        <a class="header-links" href="#articles" onclick="scrollToSection('articles')"> Articles </a>
+                    </div>
+                    <div
+                        class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                    >
+                        <a
+                            href="#trynow"
+                            aria-label="signup"
+                            class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2 interactive-element"
+                            onclick="showInteractiveDemo()"
+                        >
+                            <span>Try Now</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <button
+                    class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-white lg:tw-hidden"
+                    onclick="toggleHeader()"
+                    aria-label="menu"
+                    id="collapse-btn"
+                ></button>
+            </header>
+
+            <section
+                class="hero-section tw-relative tw-flex tw-mt-10 tw-min-h-[100vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]"
+                id="hero-section"
+            >
+                <div
+                    class="tw-flex tw-h-full tw-min-h-[100vh] tw-w-full tw-flex-col tw-place-content-center tw-gap-6 tw-p-[5%] max-xl:tw-place-items-center max-lg:tw-p-4"
+                >
+                    <div
+                        class="tw-flex tw-flex-col tw-place-content-center tw-items-center"
+                    >
+                        <div
+                            class="reveal-up gradient-text tw-text-center tw-text-6xl tw-font-semibold tw-uppercase tw-leading-[80px] max-lg:tw-text-4xl max-md:tw-leading-snug floating"
+                        >
+                            <span class=""> AIR Disasters </span>
+                            <br />
+                            <span class="tw-text-4xl tw-text-white">Interactive 3D Experience</span>
+                        </div>
+                        <div
+                            class="reveal-up tw-mt-10 tw-max-w-[450px] tw-p-2 tw-text-center tw-text-gray-300 max-lg:tw-max-w-full"
+                        >
+                            Explore air disasters in an immersive 3D environment. Click and interact with models to learn more.
+                        </div>
+                        <div class="tw-mt-8">
+                            <button onclick="startExperience()" class="tw-rounded-full tw-bg-gradient-to-r tw-from-purple-600 tw-to-pink-600 tw-px-6 tw-py-3 tw-text-white tw-transition-transform tw-duration-[0.3s] hover:tw-scale-105 interactive-element">
+                                Start 3D Experience
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider" id="problem"></div>
+
+            <section id="trynow"
+                class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6"
+            >
+                <div
+                    class="reveal-up tw-flex tw-mt-20 tw-min-h-[60vh] tw-place-content-center tw-place-items-center tw-gap-[10%] max-lg:tw-flex-col max-lg:tw-gap-10"
+                >
+                    <div class="tw-flex">
+                        <div
+                            class="tw-max-h-[650px] tw-max-w-[850px] tw-overflow-hidden tw-rounded-lg tw-shadow-lg tw-shadow-[rgba(170,49,233,0.44021358543417366)] interactive-element"
+                            id="team-model-container"
+                        >
+                            <!-- 3D model will be inserted here -->
+                            <div class="model-placeholder tw-h-[400px] tw-w-[600px] tw-flex tw-items-center tw-justify-center max-md:tw-w-full max-md:tw-h-[300px]">
+                                <img
+                                    src="./assets/images/teammembers/groupphoto.png"
+                                    alt="coding"
+                                    class="tw-h-full tw-w-full tw-object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4"
+                    >
+                        <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">
+                            Team Forge
+                        </h3>
+
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                AI powered analysis
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Advanced AI algorithms analyze historical air disaster data to identify patterns and prevent future incidents.
+                            </span>
+                        </div>
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                Interactive 3D models
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Explore detailed 3D reconstructions of aircraft and accident scenarios for better understanding and training.
+                            </span>
+                        </div>
+                        <div
+                        class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                    >
+                        <button onclick="showModelInfo('team')" class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2 interactive-element">
+                            <span>Learn More</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider" id="features"></div>
+
+            <section
+                class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6"
+            >
+                <div
+                    class="reveal-up tw-flex tw-min-h-[60vh] tw-place-content-center tw-place-items-center tw-gap-[10%] max-lg:tw-flex-col max-lg:tw-gap-10"
+                >
+                    <div
+                        class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4"
+                    >
+                        <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">
+                            Whale
+                        </h3>
+
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                Immersive visualization
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Experience detailed 3D visualizations of marine wildlife affected by air disasters and environmental impacts.
+                            </span>
+                        </div>
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                Environmental impact analysis
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Comprehensive assessment tools for understanding the marine ecosystem effects of aviation incidents.
+                            </span>
+                        </div>
+                        <div
+                        class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                    >
+                        <button onclick="showModelInfo('whale')" class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2 interactive-element">
+                            <span>Explore Model</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                    </div>
+
+                    <div class="tw-flex">
+                        <div
+                            class="tw-max-h-[650px] tw-max-w-[850px] tw-overflow-hidden tw-rounded-lg tw-shadow-lg tw-shadow-[rgba(170,49,233,0.44021358543417366)] interactive-element"
+                            id="whale-model-container"
+                        >
+                            <!-- 3D model will be inserted here -->
+                            <div class="model-placeholder tw-h-[400px] tw-w-[600px] tw-flex tw-items-center tw-justify-center max-md:tw-w-full max-md:tw-h-[300px]">
+                                <img
+                                    src="./assets/images/home/whale.png"
+                                    alt="coding"
+                                    class="tw-h-full tw-w-full tw-object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider" id="impact"></div>
+
+            <section
+                class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-max-w-[100vw] tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6"
+            >
+                <div
+                    class="reveal-up tw-flex tw-mt-20 tw-min-h-[60vh] tw-place-content-center tw-place-items-center tw-gap-[10%] max-lg:tw-flex-col max-lg:tw-gap-10"
+                >
+                    <div class="tw-flex">
+                        <div
+                            class="tw-max-h-[650px] tw-max-w-[850px] tw-overflow-hidden tw-rounded-lg tw-shadow-lg tw-shadow-[rgba(170,49,233,0.44021358543417366)] interactive-element"
+                            id="bird-model-container"
+                        >
+                            <!-- 3D model will be inserted here -->
+                            <div class="model-placeholder tw-h-[400px] tw-w-[600px] tw-flex tw-items-center tw-justify-center max-md:tw-w-full max-md:tw-h-[300px]">
+                                <img
+                                    src="./assets/images/home/bird.png"
+                                    alt="coding"
+                                    class="tw-h-full tw-w-full tw-object-cover"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4"
+                    >
+                        <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">
+                            Birds
+                        </h3>
+
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                Bird strike simulation
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Advanced physics-based simulations of bird strikes on aircraft, helping engineers design safer planes.
+                            </span>
+                        </div>
+                        <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                Migration pattern analysis
+                            </h4>
+                            <span
+                                class="tw-text-lg tw-text-gray-300 max-md:tw-text-base"
+                            >
+                                Real-time tracking and predictive modeling of bird migration patterns to reduce collision risks with aircraft.
+                            </span>
+                        </div>
+                        <div
+                        class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center"
+                    >
+                        <button onclick="showModelInfo('bird')" class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2 interactive-element">
+                            <span>View Interactive Model</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider" id="articles"></div>
+
+            <footer
+                class="tw-mt-auto tw-flex tw-w-full tw-place-content-around tw-gap-3 tw-p-[5%] tw-px-[10%] tw-text-white max-md:tw-flex-col"
+            >
+                <div
+                    class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-place-items-center tw-gap-6 max-md:tw-w-full"
+                >
+                    <img
+                        src="./assets/logo/logo2.png"
+                        alt="logo"
+                        srcset=""
+                        class="tw-max-w-[120px] floating"
+                    />
+                    <div>
+                        Amity University
+                        <br />
+                        Punjab
+                    </div>
+                    <div class="tw-mt-3 tw-text-lg tw-font-semibold">Follow us</div>
+                    <div class="tw-flex tw-gap-4 tw-text-2xl">
+                        <a href="https://linkedin.com/in/sparshgaur369" aria-label="Linkedin" class="interactive-element">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a
+                            href="https://twitter.com/@sparshgaur369"
+                            aria-label="Twitter"
+                            class="interactive-element"
+                        >
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a
+                            href="https://instagram.com/sparshgaur369"
+                            class="tw-h-[40px] tw-w-[40px] interactive-element"
+                            aria-label="Instagram"
+                        >
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                    <h2 class="tw-text-3xl max-md:tw-text-xl">Team Forge</h2>
+                    <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                        <a href="#" class="footer-link interactive-element">Use cases</a>
+                        <a href="#" class="footer-link interactive-element">Integrations</a>
+                        <a href="#" class="footer-link interactive-element">Change logs</a>
+                        <a href="#" class="footer-link interactive-element">Blogs</a>
+                        <a href="#" class="footer-link interactive-element">Contact</a>
+                    </div>
+                </div>
+
+                <div class="tw-flex tw-h-full tw-w-[250px] tw-flex-col tw-gap-4">
+                    <h2 class="tw-text-3xl max-md:tw-text-xl">Resources</h2>
+                    <div class="tw-flex tw-flex-col tw-gap-3 max-md:tw-text-sm">
+                        <a href="#" class="footer-link interactive-element">About us</a>
+                        <a href="#" class="footer-link interactive-element">FAQ</a>
+                        <a href="#" class="footer-link interactive-element">Contact Us</a>
+                        <a href="#" class="footer-link interactive-element">Blogs</a>
+                        <a href="#" class="footer-link interactive-element">Privacy policy</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+        <!-- Modal for 3D model information -->
+        <div class="modal" id="modelInfoModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2 id="modal-title" class="tw-text-3xl tw-mb-4 gradient-text">Model Information</h2>
+                <div id="modal-content" class="tw-mt-4">
+                    <!-- Content will be inserted here dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"></script>
+        
+        <script>
+            // Three.js initialization
+            let scene, camera, renderer, particles;
+            const particlesCount = 1000;
+            let raycaster, mouse;
+            let teamModel, whaleModel, birdModel;
+            
+            function init() {
+                // Scene setup
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 20;
+                
+                // Renderer setup
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+                
+                // Raycaster for mouse interaction
+                raycaster = new THREE.Raycaster();
+                mouse = new THREE.Vector2();
+                
+                // Add particles to background
+                createParticles();
+                
+                // Lights
+                const ambientLight = new THREE.AmbientLight(0x404040, 2);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                directionalLight.position.set(0, 1, 1);
+                scene.add(directionalLight);
+                
+                // Window resize event
+                window.addEventListener('resize', onWindowResize);
+                
+                // Mouse move event for parallax effect
+                document.addEventListener('mousemove', onMouseMove);
+                
+                // Start animation
+                animate();
+            }
+            
+            function createParticles() {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const colors = [];
+                
+                for (let i = 0; i < particlesCount; i++) {
+                    const x = (Math.random() - 0.5) * 100;
+                    const y = (Math.random() - 0.5) * 100;
+                    const z = (Math.random() - 0.5) * 100;
+                    
+                    vertices.push(x, y, z);
+                    
+                    // Add colors with purplish hue
+                    colors.push(
+                        0.5 + Math.random() * 0.5, 
+                        0.2 + Math.random() * 0.3, 
+                        0.8 + Math.random() * 0.2
+                    );
+                }
+                
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.1,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate particles slowly
+                if (particles) {
+                    particles.rotation.x += 0.0002;
+                    particles.rotation.y += 0.0005;
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            
+            function onMouseMove(event) {
+                // Calculate mouse position
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                // Move particles based on mouse position (parallax effect)
+                if (particles) {
+                    particles.rotation.x += mouse.y * 0.0002;
+                    particles.rotation.y += mouse.x * 0.0002;
+                }
+            }
+            
+            // Header toggle function
+            function toggleHeader() {
+                const headerItems = document.getElementById('collapsed-header-items');
+                headerItems.classList.toggle('show');
+                
+                const collapseBtn = document.getElementById('collapse-btn');
+                if (headerItems.classList.contains('show')) {
+                    collapseBtn.classList.remove('bi-list');
+                    collapseBtn.classList.add('bi-x-lg');
+                } else {
+                    collapseBtn.classList.remove('bi-x-lg');
+                    collapseBtn.classList.add('bi-list');
+                }
+            }
+            
+            // Scroll to section function
+            function scrollToSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    window.scrollTo({
+                        top: section.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            
+            // Start Experience
+            function startExperience() {
+                // Animate scroll to first section
+                scrollToSection('trynow');
+                
+                // Add special particle effect
+                createSpecialEffect();
+            }
+            
+            function createSpecialEffect() {
+                const count = 200;
+                const newGeometry = new THREE.BufferGeometry();
+                const newPositions = [];
+                
+                for (let i = 0; i < count; i++) {
+                    const x = (Math.random() - 0.5) * 20;
+                    const y = (Math.random() - 0.5) * 20;
+                    const z = (Math.random() - 0.5) * 20;
+                    const z = (Math.random() - 0.5) * 20;
+
+newPositions.push(x, y, z);
+}
+
+newGeometry.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+
+const newMaterial = new THREE.PointsMaterial({
+size: 0.15,
+color: 0xff44ff,
+transparent: true,
+opacity: 0.8
+});
+
+const specialParticles = new THREE.Points(newGeometry, newMaterial);
+scene.add(specialParticles);
+
+// Animate particles
+let frame = 0;
+function animateEffect() {
+if (frame < 100) {
+    specialParticles.rotation.x += 0.01;
+    specialParticles.rotation.y += 0.01;
+    specialParticles.material.opacity -= 0.005;
+    frame++;
+    requestAnimationFrame(animateEffect);
+} else {
+    scene.remove(specialParticles);
+}
+}
+animateEffect();
+}
+
+// Load 3D models
+function loadModels() {
+const loader = new THREE.GLTFLoader();
+
+loader.load('./models/teamModel.glb', function (gltf) {
+teamModel = gltf.scene;
+teamModel.position.set(0, -2, -5);
+teamModel.scale.set(0.5, 0.5, 0.5);
+scene.add(teamModel);
+});
+
+loader.load('./models/whaleModel.glb', function (gltf) {
+whaleModel = gltf.scene;
+whaleModel.position.set(5, 0, -10);
+whaleModel.scale.set(1.2, 1.2, 1.2);
+scene.add(whaleModel);
+});
+
+loader.load('./models/birdModel.glb', function (gltf) {
+birdModel = gltf.scene;
+birdModel.position.set(-5, 2, -8);
+birdModel.scale.set(0.8, 0.8, 0.8);
+scene.add(birdModel);
+});
+}
+
+// Handle mouse clicks for interaction
+function onMouseClick(event) {
+mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+raycaster.setFromCamera(mouse, camera);
+const intersects = raycaster.intersectObjects(scene.children, true);
+
+if (intersects.length > 0) {
+const object = intersects[0].object;
+object.scale.set(object.scale.x * 1.1, object.scale.y * 1.1, object.scale.z * 1.1);
+}
+}
+
+// Initialize experience
+window.addEventListener('DOMContentLoaded', () => {
+init();
+loadModels();
+document.addEventListener('click', onMouseClick);
+});
+
+</script>
